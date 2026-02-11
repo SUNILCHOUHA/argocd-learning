@@ -3,7 +3,6 @@ kind: Deployment
 
 metadata:
   name: apache-deploy 
-i
 spec:
   replicas: 2
   selector: 
