@@ -10,7 +10,6 @@ spec:
     matchLabels:
       app: apache-po 
 
-
   template:
     metadata:
       labels:
