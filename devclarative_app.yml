@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: declarative-app
+  namespace: argocd
+
+
+spec:
+  project: frontend-team
+  source:
+    repoURL: https://github.com/SUNILCHOUHA/k8s-practice.git
+    targetRevision: main
+    path: demo/
+  destination: 
+    server: https://kubernetes.default.svc
+    namespace: frontend
+  syncPolicy: 
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions: 
+      - CreateNamespace=true
