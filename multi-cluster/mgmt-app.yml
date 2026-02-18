@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mgmt
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SUNILCHOUHA/k8s-practice.git
+    targetRevision: main
+    path: demo # Path within the repo
+  destination:
+    server: https://kubernetes.default.svc # Production cluster API server URL here, run `argocd cluster list` to get the URL
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    

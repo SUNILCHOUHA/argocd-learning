@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SUNILCHOUHA/k8s-practice.git
+    targetRevision: main
+    path: Notes-App/K8s # Path within the repo
+  destination:
+    server: https://172.18.0.4:6443 # Production cluster API server URL here, run `argocd cluster list` to get the URL
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    
