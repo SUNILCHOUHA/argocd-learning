@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: demo-list
+  namespace: argocd
+
+spec:
+  generators:
+    - list:
+        elements:
+          - app: nginx
+            path: demo 
+          - app: Notes-App 
+            path: Notes-App/K8s 
+          - app: autoscaling
+            path: autoscaling
+  
+
+  template:
+    metadata: 
+      name: '{{app}}-list'
+    spec: 
+      project: default
+      source:
+        repoURL: https://github.com/SUNILCHOUHA/k8s-practice.git
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

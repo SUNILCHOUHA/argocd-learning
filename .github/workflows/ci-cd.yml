@@ -1,0 +1,52 @@
+name: CI/CD for CNDP
+on:
+  push:
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tage: ${{ steps.vars.outputs.tag }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set Image Tag
+        id: vars
+        run: echo "tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Build & Push Image
+        working-directory: simple/app
+        run: |
+          docker build -t sunilchouha/nginx:${{steps.vars.outputs.tag }} .
+          docker push sunilchouha/nginx:${{ steps.vars.outputs.tag }}
+
+
+  cluster:
+    runs-on: ubuntu-latest
+    needs: build-image
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set Kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+
+      - name: Deploy
+        working-directory: simple/k8s
+        run: |
+          kubectl set image deployment/nginx \
+          nginx=sunilchoha/nginx:${{ needs.build-image.outputs.image_tag }}
+
+      - name: Verify Deployment
+        run: kubectl rollout status deployment/nginx

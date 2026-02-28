@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hook-test
+  namespace: argocd
+
+
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/SUNILCHOUHA/k8s-practice.git
+    targetRevision: main
+    path: demo/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
